@@ -35,7 +35,7 @@ export async function createTask(prevState: State, formData: FormData) {
 // Delete task
 export async function deleteTask(id: string) {
   try {
-    await prisma.task.delete({ where: { id: Number(id) } });
+    await prisma.task.delete({ where: { id: id } });
     revalidatePath("/tasks");
     return { message: "Task deleted successfully" };
   } catch (error) {
@@ -56,7 +56,7 @@ export async function updateTask(
 
   try {
     await prisma.task.update({
-      where: { id: Number(id) },
+      where: { id: id },
       data: {
         title,
         description,
