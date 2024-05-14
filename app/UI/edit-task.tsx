@@ -1,11 +1,12 @@
 "use client";
 
+import type { Task } from "@prisma/client";
 import { updateTask } from "@/app/lib/actions";
 import { useFormState } from "react-dom";
 import { Button } from "@/app/UI/button";
 import Link from "next/link";
 
-export default function EditTaskForm({ task }) {
+export default function EditTaskForm({ task }: { task: Task }) {
   const initialState = { message: "", errors: {} };
   const updateTaskWithId = updateTask.bind(null, task.id);
   const [state, dispatch] = useFormState(updateTaskWithId, initialState);
@@ -41,7 +42,7 @@ export default function EditTaskForm({ task }) {
           id="description"
           name="description"
           placeholder="Task description"
-          defaultValue={task.description}
+          defaultValue={task.description ?? ""}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
@@ -58,7 +59,7 @@ export default function EditTaskForm({ task }) {
           type="date"
           id="dueDate"
           name="dueDate"
-          defaultValue={task.dueDate}
+          defaultValue={task.dueDate ? task.dueDate.toString() : ""}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
