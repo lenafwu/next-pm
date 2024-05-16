@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Course } from "@prisma/client";
 
 export default function TaskForm() {
-  const initialState = { message: null, errors: {} };
+  const initialState = { message: "", errors: {} };
   const [state, dispatch] = useActionState(createTask, initialState);
 
   return (

@@ -47,6 +47,7 @@ const CreateTask = taskSchema.omit({
   id: true,
   dueDate: true,
 });
+const UpdateTask = taskSchema.omit({ id: true });
 const CreateCourse = courseSchema.omit({ id: true });
 const CreateAssignment = assignmentSchema.omit({ id: true });
 
@@ -126,9 +127,12 @@ export async function createTask(prevState: State, formData: FormData) {
 }
 
 // Update task
-export async function updateTask(prevState: State, formData: FormData) {
-  const validatedData = taskSchema.safeParse({
-    id: formData.get("id"),
+export async function updateTask(
+  id: string,
+  prevState: State,
+  formData: FormData
+) {
+  const validatedData = UpdateTask.safeParse({
     name: formData.get("name"),
     detail: formData.get("detail"),
     dueDate: formData.get("dueDate"),
@@ -142,7 +146,7 @@ export async function updateTask(prevState: State, formData: FormData) {
     };
   }
 
-  const { id, name, detail, dueDate, status } = validatedData.data;
+  const { name, detail, dueDate, status } = validatedData.data;
 
   try {
     await prisma.task.update({
