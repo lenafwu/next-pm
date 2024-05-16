@@ -1,3 +1,5 @@
+import { Course } from "@prisma/client";
+
 export default async function CourseTable({ courses }: { courses: Course[] }) {
   return (
     <div className="container mx-auto my-4">

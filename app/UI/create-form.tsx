@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { createTask } from "@/app/lib/actions";
 import { ClockIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/app/UI/button";
@@ -9,7 +9,7 @@ import { Course } from "@prisma/client";
 
 export default function TaskForm() {
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(createTask, initialState);
+  const [state, dispatch] = useActionState(createTask, initialState);
 
   return (
     <form action={dispatch} className="space-y-6">
