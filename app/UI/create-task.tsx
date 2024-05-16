@@ -4,7 +4,6 @@ import { createTask } from "@/app/lib/actions";
 import { ClockIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/app/UI/button";
 import Link from "next/link";
-import { Course } from "@prisma/client";
 import { useFormState } from "react-dom";
 
 export default function TaskForm() {

@@ -45,7 +45,11 @@ export async function fetchCourseById(id: string) {
 // fetch assignments
 export async function fetchAssignments() {
   try {
-    const assignments = await prisma.assignment.findMany();
+    const assignments = await prisma.assignment.findMany({
+      include: {
+        course: true, // Include the related course information
+      },
+    });
     return assignments;
   } catch (error) {
     console.error("Database error: " + error);
@@ -63,5 +67,21 @@ export async function fetchAssignmentById(id: string) {
   } catch (error) {
     console.error("Database error: " + error);
     throw new Error("Failed to fetch assignment");
+  }
+}
+
+// fetch grade items by course id
+export async function fetchGradeItemsByCourseId(courseId: string) {
+  try {
+    const gradeItems = await prisma.gradeItem.findMany({
+      where: { courseId: courseId },
+      include: {
+        assignment: true,
+      },
+    });
+    return gradeItems;
+  } catch (error) {
+    console.error("Database error: " + error);
+    throw new Error("Failed to fetch grade items");
   }
 }

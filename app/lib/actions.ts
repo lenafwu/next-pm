@@ -43,6 +43,13 @@ const assignmentSchema = z.object({
   gradeItemId: z.string().optional(),
 });
 
+const gradeItemSchema = z.object({
+  id: z.string(),
+  fullMark: z.coerce.number(),
+  weight: z.coerce.number(),
+  courseId: z.string(),
+});
+
 const CreateTask = taskSchema.omit({
   id: true,
   dueDate: true,
@@ -50,41 +57,64 @@ const CreateTask = taskSchema.omit({
 const UpdateTask = taskSchema.omit({ id: true });
 const CreateCourse = courseSchema.omit({ id: true });
 const CreateAssignment = assignmentSchema.omit({ id: true });
+const CreateGradeItem = gradeItemSchema.omit({ id: true });
 
 export async function createAssignment(prevState: State, formData: FormData) {
-  const validatedData = CreateAssignment.safeParse({
+  const validatedAssgData = CreateAssignment.safeParse({
     name: formData.get("name"),
     detail: formData.get("detail"),
     dueDate: formData.get("dueDate"),
     status: formData.get("status"),
-    points: formData.get("points"),
     courseId: formData.get("courseId"),
-    gradeItemId: formData.get("gradeItemId"),
   });
 
-  if (!validatedData.success) {
+  const validatedGradeItemData = CreateGradeItem.safeParse({
+    fullMark: formData.get("fullMark"),
+    weight: formData.get("weight"),
+    courseId: formData.get("courseId"),
+  });
+
+  if (!validatedAssgData.success) {
     return {
-      errors: validatedData.error.flatten().fieldErrors,
+      errors: validatedAssgData.error.flatten().fieldErrors,
       message: "Missing Fields.",
     };
   }
 
-  const { name, detail, dueDate, status, points, courseId, gradeItemId } =
-    validatedData.data;
+  if (!validatedGradeItemData.success) {
+    return {
+      errors: validatedGradeItemData.error.flatten().fieldErrors,
+      message: "Missing Fields.",
+    };
+  }
+
+  const { name, detail, dueDate, status, courseId } = validatedAssgData.data;
+
+  const { fullMark, weight } = validatedGradeItemData.data;
 
   try {
-    await prisma.assignment.create({
-      data: {
-        name,
-        detail,
-        dueDate: DateTime.fromISO(dueDate as string).toJSDate(),
-        status,
-        points,
-        courseId,
-        gradeItemId,
-      },
+    await prisma.$transaction(async (tx) => {
+      const gradeItem = await tx.gradeItem.create({
+        data: {
+          fullMark,
+          weight,
+          courseId,
+        },
+      });
+
+      await tx.assignment.create({
+        data: {
+          name,
+          detail,
+          dueDate: DateTime.fromISO(dueDate as string).toJSDate(),
+          status,
+          courseId,
+          gradeItemId: gradeItem.id,
+        },
+      });
     });
   } catch (error) {
+    console.error("Error creating assignment:", error);
     return { message: "An error occurred while creating the assignment" };
   }
 
@@ -201,6 +231,40 @@ export async function createCourse(prevState: State, formData: FormData) {
   } catch (error) {
     console.error("Error creating course:", error);
     return { message: "An error occurred while creating the course" };
+  }
+
+  revalidatePath("/dashboard"); // Adjust the path as necessary for your application
+  redirect("/dashboard"); // Adjust redirection as needed
+  return { errors: {}, message: null };
+}
+
+export async function createGradeItem(prevState: State, formData: FormData) {
+  const validatedData = CreateGradeItem.safeParse({
+    fullMark: formData.get("fullMark"),
+    weight: formData.get("weight"),
+    courseId: formData.get("courseId"),
+  });
+
+  if (!validatedData.success) {
+    return {
+      errors: validatedData.error.flatten().fieldErrors,
+      message: "Validation failed.",
+    };
+  }
+
+  const { fullMark, weight, courseId } = validatedData.data;
+
+  try {
+    await prisma.gradeItem.create({
+      data: {
+        fullMark,
+        weight,
+        courseId,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating grade item:", error);
+    return { message: "An error occurred while creating the grade item" };
   }
 
   revalidatePath("/dashboard"); // Adjust the path as necessary for your application

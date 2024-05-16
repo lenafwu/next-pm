@@ -1,4 +1,4 @@
-import TaskForm from "@/app/UI/create-form";
+import TaskForm from "@/app/UI/create-task";
 import { fetchCourses } from "@/app/lib/data";
 
 export default async function TaskPage() {
