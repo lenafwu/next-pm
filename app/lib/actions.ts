@@ -125,6 +125,43 @@ export async function createTask(prevState: State, formData: FormData) {
   redirect("/dashboard");
 }
 
+// Update task
+export async function updateTask(prevState: State, formData: FormData) {
+  const validatedData = taskSchema.safeParse({
+    id: formData.get("id"),
+    name: formData.get("name"),
+    detail: formData.get("detail"),
+    dueDate: formData.get("dueDate"),
+    status: formData.get("status"),
+  });
+
+  if (!validatedData.success) {
+    return {
+      errors: validatedData.error.flatten().fieldErrors,
+      message: "Missing Fields.",
+    };
+  }
+
+  const { id, name, detail, dueDate, status } = validatedData.data;
+
+  try {
+    await prisma.task.update({
+      where: { id: id },
+      data: {
+        name,
+        detail,
+        dueDate: DateTime.fromISO(dueDate as string).toJSDate(),
+        status,
+      },
+    });
+  } catch (error) {
+    return { message: "An error occurred while updating the task" };
+  }
+
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}
+
 // Delete task
 export async function deleteTask(id: string) {
   try {
