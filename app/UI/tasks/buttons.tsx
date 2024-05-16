@@ -17,7 +17,7 @@ export async function DeleteTask({ id }: { id: string }) {
 // Edit task button
 export function UpdateTask({ id }: { id: string }) {
   return (
-    <Link href={`/tasks/${id}/edit`}>
+    <Link href={`/dashboard/tasks/${id}/edit`}>
       <button>
         <PencilIcon className="w-5" />
         Edit

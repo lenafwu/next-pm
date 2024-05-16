@@ -11,13 +11,41 @@ generator client {
 datasource db {
    provider = "postgresql"
    url = env("POSTGRES_PRISMA_URL") 
-   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Task {
-  id          String    @id @default(uuid())
-  title       String
-  description String?
-  dueDate     DateTime?
-  status      String
+  id       String   @id @default(uuid())
+  name     String
+  dueDate  DateTime?  // Optional due date
+  detail   String?    // Optional detail
+  status   String     // Status of the task
+}
+
+model Assignment {
+  id         String   @id @default(uuid())
+  name       String
+  dueDate    DateTime?  // Optional due date
+  detail     String?    // Optional detail
+  status     String     // Status of the task
+  points     Float?      // Points for the assignment
+  courseId   String     // Link to Course model
+  gradeItem  GradeItem? @relation(fields: [gradeItemId], references: [id])
+  gradeItemId String?   @unique
+  course     Course     @relation(fields: [courseId], references: [id])
+}
+
+model Course {
+  id         String       @id @default(uuid())
+  name       String
+  assignments Assignment[] // One-to-many relation with Assignment
+  gradeItems GradeItem[]  // One-to-many relation with GradeItem
+}
+
+model GradeItem {
+  id          String      @id @default(uuid())
+  fullMark    Float       // Full mark of the grade item
+  weight      Float       // Weight of the grade item in percentage
+  courseId    String      // Link to Course model
+  course      Course      @relation(fields: [courseId], references: [id])
+  assignment  Assignment? 
 }

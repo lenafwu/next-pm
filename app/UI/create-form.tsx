@@ -4,9 +4,11 @@ import { useFormState } from "react-dom";
 import { createTask } from "@/app/lib/actions";
 import { ClockIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/app/UI/button";
+import Link from "next/link";
+import { Course } from "@prisma/client";
 
 export default function TaskForm() {
-  const initialState = { message: "", errors: {} };
+  const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(createTask, initialState);
 
   return (
@@ -14,35 +16,51 @@ export default function TaskForm() {
       {/* Task Title */}
       <div>
         <label
-          htmlFor="title"
+          htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
           Task Title
         </label>
         <input
           type="text"
-          id="title"
-          name="title"
+          id="name"
+          name="name"
           required
           placeholder="Enter task title"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
+      <div id="title-error" aria-live="polite" aria-atomic="true">
+        {state.errors?.name &&
+          state.errors.name.map((error: string) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
+      </div>
 
       {/* Task Description */}
       <div>
         <label
-          htmlFor="description"
+          htmlFor="detail"
           className="block text-sm font-medium text-gray-700"
         >
           Description
         </label>
         <textarea
-          id="description"
-          name="description"
+          id="detail"
+          name="detail"
           placeholder="Task description"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
+      </div>
+      <div id="description-error" aria-live="polite" aria-atomic="true">
+        {state.errors?.detail &&
+          state.errors.detail.map((error: string) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
       </div>
 
       {/* Due Date */}
@@ -57,6 +75,7 @@ export default function TaskForm() {
           type="date"
           id="dueDate"
           name="dueDate"
+          defaultValue={new Date().toISOString().slice(0, 10)}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
@@ -98,15 +117,18 @@ export default function TaskForm() {
             </label>
           </div>
         </div>
+        <div id="status-error" aria-live="polite" aria-atomic="true">
+          {state.errors?.status &&
+            state.errors.status.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
       </fieldset>
 
       <div className="mt-6 flex justify-end space-x-4">
-        <Button
-          type="button"
-          className="px-4 py-2 bg-gray-600 text-white rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Cancel
-        </Button>
+        <Link href="/dashboard">Cancel</Link>
         <Button
           type="submit"
           className="px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
