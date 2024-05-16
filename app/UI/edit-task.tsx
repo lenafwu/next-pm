@@ -5,12 +5,12 @@ import { updateTask } from "@/app/lib/actions";
 import { Button } from "@/app/UI/button";
 import Link from "next/link";
 import { DateTime } from "luxon";
-import { useActionState } from "react";
+import { useFormState } from "react-dom";
 
 export default function EditTaskForm({ task }: { task: Task }) {
   const initialState = { message: "", errors: {} };
   const updateTaskWithId = updateTask.bind(null, task.id);
-  const [state, dispatch] = useActionState(updateTaskWithId, initialState);
+  const [state, dispatch] = useFormState(updateTaskWithId, initialState);
   return (
     <form action={dispatch} className="space-y-6">
       {/* Task Title */}

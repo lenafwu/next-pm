@@ -1,12 +1,12 @@
 "use client";
-import { useActionState } from "react";
 import { createCourse } from "@/app/lib/actions";
 import { Button } from "@/app/UI/button";
 import Link from "next/link";
+import { useFormState } from "react-dom";
 
 export default function CreateCourseForm() {
-  const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useActionState(createCourse, initialState);
+  const initialState = { message: "", errors: {} };
+  const [state, dispatch] = useFormState(createCourse, initialState);
 
   return (
     <form action={dispatch} className="space-y-6">
